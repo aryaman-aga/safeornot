@@ -28,7 +28,7 @@ A robust, hybrid text classification system designed to detect unsafe content, s
     ```
 
 2.  **Run Server**:
-    The server will automatically download the pre-trained model from Hugging Face (`aryamanagarwal/safe-or-not-bert`) and start the API.
+    The server will automatically download the pre-trained model from Hugging Face (`aryaman1222/safe`) and start the API.
     ```bash
     python server.py
     ```

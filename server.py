@@ -51,16 +51,21 @@ def contains_hard_cuss_word(text: str):
 
 # Load Model and Tokenizer
 # This will automatically download the model from Hugging Face if not present locally
-MODEL_ID = "aryaman1222/safe"  # <--- ENSURE THIS MATCHES YOUR HF REPO ID
-print(f"Loading model from {MODEL_ID}...")
+MODEL_ID = "aryaman1222/safe"  
+print(f"Attempting to load model from Hugging Face Hub: {MODEL_ID}...")
+print(f"If this fails, check if '{MODEL_ID}' exists at https://huggingface.co/{MODEL_ID}")
+
 try:
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
     model = AutoModelForSequenceClassification.from_pretrained(MODEL_ID)
     model.eval() # Set to evaluation mode
     print("Model loaded successfully.")
+except OSError as e:
+    print(f"\n❌ CRITICAL ERROR: Could not load model '{MODEL_ID}'.")
+    print(f"Error details: {e}")
+    exit(1)
 except Exception as e:
     print(f"Error loading model: {e}")
-    print("Please check if the MODEL_ID in server.py is correct and the model is public/accessible.")
     exit(1)
 
 # Define Request Schema

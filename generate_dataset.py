@@ -203,6 +203,59 @@ unsafe_solicitation_hinglish = [
     "aaj raat mere paas aaja"
 ]
 
+# --- NEW: Toxic / Bullying / Spam Templates ---
+unsafe_toxic_templates = [
+    "This is stupid—only an idiot would ask that.",
+    "Stop posting here; nobody cares about your opinion.",
+    "If you’re not like us, you don’t belong in this community.",
+    "I’m going to spam this channel until I get what I want.",
+    "The moderators are useless and should be fired.",
+    "Don’t help them—let them fail and quit.",
+    "Your question is a waste of time; learn to read.",
+    "I’m only here to promote my product; DM me for links.",
+    "Report it if you want—nothing ever changes here.",
+    "Everyone here is biased, so I’m going to stir drama.",
+    "I’ll keep reposting the same thing until it gets attention.",
+    "You’re clueless—stop pretending you know anything.",
+    "This community is trash and the people are trash.",
+    "Only insiders get help here; newcomers should stay quiet.",
+    "I’m going to derail this thread because it’s boring.",
+    "Your culture doesn’t fit here, so leave.",
+    "I’m canceling the event last minute just to mess with people.",
+    "I won’t follow the rules; moderators can’t make me.",
+    "Go argue somewhere else—this isn’t a place for your kind of thinking.",
+    "I’m here to pick fights, not to contribute.",
+    "You are so dumb, just leave.",
+    "Nobody likes you here.",
+    "Kill yourself.",
+    "You are a waste of space.",
+    "Shut up and go away.",
+    "I hate people like you.",
+    "You are pathetic.",
+    "This post is garbage.",
+    "Delete your account.",
+    "You are ugly and stupid."
+]
+
+# --- NEW: Safe Professional / Disagreement Templates ---
+safe_professional_templates = [
+    "I disagree, but I appreciate your perspective and want to understand it better.",
+    "That is a valid point, however, I have a different view.",
+    "Let's agree to disagree on this topic.",
+    "I respectfully disagree with your statement.",
+    "Could you please clarify what you mean by that?",
+    "I understand where you are coming from, but the data suggests otherwise.",
+    "Thank you for sharing your opinion, even though I don't agree.",
+    "Let's keep the conversation constructive.",
+    "I think there might be a misunderstanding here.",
+    "Can we focus on the facts rather than personal opinions?",
+    "I appreciate your feedback and will take it into consideration.",
+    "It's okay to have different opinions.",
+    "Let's discuss this calmly.",
+    "I see your point, but have you considered this alternative?",
+    "That's an interesting perspective."
+]
+
 # --- GENERATION LOGIC ---
 
 def generate_safe_paragraph():
@@ -224,6 +277,10 @@ def generate_safe_paragraph():
     # 25% chance to include a "hard negative" (safe but tricky) sentence
     if random.random() < 0.25:
         return random.choice(safe_hard_negatives)
+        
+    # 15% chance to include a "safe professional disagreement" (to fix false positives on "I disagree")
+    if random.random() < 0.15:
+        return random.choice(safe_professional_templates)
 
     num_sentences = random.randint(2, 5)
     sentences = []
@@ -243,12 +300,15 @@ def generate_safe_paragraph():
 def generate_unsafe_paragraph():
     # Can be explicitly unsafe or subtle
     # Weighted choice to prioritize the tricky 'safe_turn_unsafe' case
-    types = ['explicit_english', 'explicit_hinglish', 'subtle_english', 'subtle_hinglish', 'mixed', 'safe_turn_unsafe']
-    weights = [0.15, 0.15, 0.15, 0.15, 0.1, 0.3] # 30% chance for safe_turn_unsafe
+    types = ['explicit_english', 'explicit_hinglish', 'subtle_english', 'subtle_hinglish', 'mixed', 'safe_turn_unsafe', 'toxic']
+    weights = [0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.3] # 30% chance for toxic/bullying
     
     type_unsafe = random.choices(types, weights=weights, k=1)[0]
     
-    if type_unsafe == 'explicit_english':
+    if type_unsafe == 'toxic':
+        return random.choice(unsafe_toxic_templates)
+    
+    elif type_unsafe == 'explicit_english':
         base = random.choice(unsafe_english_templates)
         context = generate_safe_paragraph() # Embed in safe context
         return f"{context} {base} {generate_safe_paragraph()}"
