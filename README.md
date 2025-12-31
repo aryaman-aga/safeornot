@@ -70,3 +70,40 @@ A robust, hybrid text classification system designed to detect unsafe content, s
 ## Hybrid Logic
 
 The system first checks against a `HARD_CUSS_WORDS` list (in `server.py`) for immediate flagging of explicit content. If no explicit words are found, it passes the text to the BERT model for classification.
+
+## Using the Pre-trained Model (Hugging Face)
+
+You can use the pre-trained model directly from Hugging Face without retraining locally.
+
+### 1. Python Usage
+```python
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+
+# Replace with your Hugging Face model ID
+model_id = "your-username/your-model-name" 
+
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForSequenceClassification.from_pretrained(model_id)
+
+text = "Today is a good day but you are nice, lets go for a walk and talk"
+inputs = tokenizer(text, return_tensors="pt")
+
+with torch.no_grad():
+    logits = model(**inputs).logits
+    probabilities = torch.softmax(logits, dim=1)
+    print(probabilities)
+```
+
+### 2. Running the Server with HF Model
+To run the server using the cloud model instead of a local checkpoint:
+
+1. Open `server.py`.
+2. Change `MODEL_PATH` to your Hugging Face Repo ID:
+   ```python
+   MODEL_PATH = "your-username/your-model-name"
+   ```
+3. Run the server:
+   ```bash
+   python server.py
+   ```
