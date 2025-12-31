@@ -50,8 +50,10 @@ def contains_hard_cuss_word(text: str):
     return False, None
 
 # Load Model and Tokenizer
-# Priority: Local './saved_model' > Hugging Face 'aryaman1222/safe'
-LOCAL_MODEL_PATH = "./saved_model"
+# Priority: Local '../model/saved_model' > Hugging Face 'aryaman1222/safe'
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+LOCAL_MODEL_PATH = BASE_DIR / "model" / "saved_model"
 HF_MODEL_ID = "aryaman1222/safe"
 
 print("Loading model...")

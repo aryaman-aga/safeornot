@@ -1,6 +1,14 @@
 import pandas as pd
 import random
 import numpy as np
+import os
+from pathlib import Path
+
+# Define paths
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)
+OUTPUT_FILE = DATA_DIR / "dataset.csv"
 
 # --- DATA SOURCES ---
 
@@ -281,11 +289,47 @@ safe_reporting_templates = [
     "I saw someone with a gun and hid until it was safe."
 ]
 
+# --- NEW: Safe Slang & Travel Templates ---
+# These contain words like "fire", "screaming", "trip", "alleys" which are usually unsafe,
+# but here they are used in a Gen Z / Travel context.
+safe_slang_templates = [
+    "My camera roll is literally SCREAMING.",
+    "This outfit is fire.",
+    "The vibes are immaculate.",
+    "It was a total trip, so cool.",
+    "I am obsessed with this place.",
+    "Your instagram is gonna look fire.",
+    "Just pure vibes.",
+    "It's actually CHILL.",
+    "Don't go at 2 PM, you will literally melt.",
+    "Istg if you're bored this weekend, just head over there.",
+    "It's basically a giant outdoor maze of the coolest street art.",
+    "Massive walls covered in colors, astronauts, random patterns.",
+    "I felt like I was walking through a movie set.",
+    "Best way to see it without missing the secret murals in the back alleys.",
+    "Seriously, just go. It's free, it's gorgeous."
+]
+
+# --- NEW: Safe Long Paragraph Templates ---
+# The model struggles with long, complex safe paragraphs that contain multiple "trigger" words.
+# We need to explicitly train it on full paragraphs like the Lodhi Colony review.
+safe_long_paragraph_templates = [
+    "Istg if you're bored this weekend, just head over to Lodhi Colony. I went today and my camera roll is literally SCREAMING. It's basically a giant outdoor maze of the coolest street art you've ever seen. Like, massive walls covered in colors, astronauts, random patterns, it's a total trip. I felt like I was walking through a movie set or something. Honestly, the best part? It's actually CHILL. No honking, no crowd pushing you around. Just pure vibes. Quick tips for the homies: Don't go at 2 PM: You will literally melt. Go early morning or around 4 PM for that golden hour glow. Charge your phone: You're gonna take like 500 photos, trust me. Walk or Yulu: Best way to see it without missing the secret murals in the back alleys. Seriously, just go. It's free, it's gorgeous, and your Instagram is gonna look fire.",
+    "I went to this amazing concert last night and the energy was insane. The crowd was screaming the lyrics and the lights were blinding. It was a total trip, honestly. My feet are killing me from dancing but it was worth it. The band was on fire, they played all their best songs. I met some cool people in the mosh pit, everyone was just vibing. If you haven't seen them live, you are missing out. It was the best night of my life, hands down.",
+    "Exploring the old city was such a vibe. We got lost in the narrow alleys but found the cutest cafes. The street food was to die for, literally so spicy and good. It was chaotic with all the traffic and noise but in a good way. I took so many photos, my storage is full. The architecture is crazy, like ancient buildings next to modern shops. It felt like a time travel trip. Definitely recommend checking it out if you are in town.",
+    "My workout today was brutal, I am literally dead. The trainer was screaming at us to push harder. I felt like throwing up but I survived. My muscles are on fire right now. It's a love-hate relationship with the gym. But honestly, the post-workout glow is real. I feel so strong and accomplished. Gonna go home, eat a massive meal, and pass out. Fitness is a journey, not a destination.",
+    "This movie was a rollercoaster of emotions. One minute I was laughing, the next I was crying. The plot twist was insane, I did not see it coming. The acting was fire, especially the main villain. It was a bit violent in some scenes but it fit the story. I was on the edge of my seat the whole time. A total mind trip. You have to watch it, trust me."
+]
+
 # --- GENERATION LOGIC ---
 
 def generate_safe_paragraph():
     # Mix of English and Hinglish safe sentences
     
+    # 10% chance to use a full "safe long paragraph" to fix the specific failure case
+    if random.random() < 0.1:
+        return random.choice(safe_long_paragraph_templates)
+
     # 30% chance to generate a "safe complex" sentence that mirrors the unsafe structure
     # This is CRITICAL to fix the "walk and talk" vs "walk and have sex" confusion
     if random.random() < 0.3:
@@ -310,6 +354,10 @@ def generate_safe_paragraph():
     # 15% chance to include a "safe reporting" sentence (to fix false positives on "harass/escape")
     if random.random() < 0.15:
         return random.choice(safe_reporting_templates)
+
+    # 15% chance to include "safe slang/travel" (to fix false positives on "fire/alleys/screaming")
+    if random.random() < 0.15:
+        return random.choice(safe_slang_templates)
 
     num_sentences = random.randint(2, 5)
     sentences = []
@@ -400,7 +448,7 @@ def generate_dataset(num_samples=5000):
 if __name__ == "__main__":
     print("Generating dataset...")
     df = generate_dataset(10000) # Generate 10k samples
-    df.to_csv("dataset.csv", index=False)
-    print(f"Dataset generated with {len(df)} samples. Saved to dataset.csv")
+    df.to_csv(OUTPUT_FILE, index=False)
+    print(f"Dataset generated with {len(df)} samples. Saved to {OUTPUT_FILE}")
     print(df.head())
     print(df['label'].value_counts())

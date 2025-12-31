@@ -4,10 +4,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments, DataCollatorWithPadding
+from pathlib import Path
+
+# Define paths
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_FILE = BASE_DIR / "data" / "dataset.csv"
+MODEL_DIR = BASE_DIR / "model" / "saved_model"
+RESULTS_DIR = BASE_DIR / "model" / "results"
 
 # 1. Load Data
-print("Loading dataset...")
-df = pd.read_csv("dataset.csv")
+print(f"Loading dataset from {DATA_FILE}...")
+df = pd.read_csv(DATA_FILE)
 
 # Convert labels to integers
 label_map = {"safe": 0, "not safe": 1}
@@ -73,7 +80,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=64,
     warmup_steps=500,
     weight_decay=0.01,
-    logging_dir='./logs',
+    logging_dir=str(RESULTS_DIR / 'logs'),
     logging_steps=10,
     eval_strategy="epoch",
     save_strategy="epoch",
@@ -91,8 +98,11 @@ trainer = Trainer(
 print("Starting training...")
 trainer.train()
 
-# 5. Save Model
 print("Saving model...")
-model.save_pretrained("./saved_model")
-tokenizer.save_pretrained("./saved_model")
-print("Model saved to ./saved_model")
+model.save_pretrained(MODEL_DIR)
+tokenizer.save_pretrained(MODEL_DIR)
+print(f"Model saved to {MODEL_DIR}")
+
+# 5. Save Model
+# (Already saved above)
+
