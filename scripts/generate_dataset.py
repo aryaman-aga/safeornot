@@ -310,6 +310,73 @@ safe_slang_templates = [
     "Seriously, just go. It's free, it's gorgeous."
 ]
 
+# --- NEW: Safe Reviews Templates ---
+# These are valid safety reviews (positive or negative) that should be publishable.
+# "This place is not safe" is a valid review, so it is SAFE content.
+safe_reviews_templates = [
+    "This place is not safe.",
+    "I felt unsafe walking here at night.",
+    "Avoid this area, it is dangerous.",
+    "The security here is terrible.",
+    "There are pickpockets in this area.",
+    "This place is safe.",
+    "Very secure location.",
+    "I feel safe here.",
+    "Good lighting and security guards present.",
+    "Do not go here alone.",
+    "I was robbed here, be careful.",
+    "This is a high crime area.",
+    "Completely safe for families.",
+    "A very friendly and safe neighborhood.",
+    "I would not recommend this place for solo travelers.",
+    "Stay away from the dark alleys.",
+    "Police patrol this area frequently.",
+    "I had a bad experience here, felt threatened.",
+    "Safe environment for kids.",
+    "This area is known for scams."
+]
+
+# --- NEW: Safe Distress Templates ---
+# Distress signals are valid content for a safety app (alerts).
+# They are NOT "harmful content" like hate speech.
+safe_distress_templates = [
+    "I am being followed.",
+    "Help me, I am in danger.",
+    "Call the police immediately.",
+    "Someone is chasing me.",
+    "I need help right now.",
+    "Please send help.",
+    "I am scared.",
+    "There is a suspicious person watching me.",
+    "I think I am being stalked.",
+    "Emergency, please help."
+]
+
+# --- NEW: Safe Declarative Statements ---
+# Simple, direct statements about safety to fix false positives like "The place is safe".
+safe_declarative_templates = [
+    "The place is safe.",
+    "I feel safe here.",
+    "This area is secure.",
+    "Everything is fine.",
+    "We are safe now.",
+    "It is safe to go outside.",
+    "The situation is under control.",
+    "You are safe with me.",
+    "This neighborhood is very safe.",
+    "I am safe.",
+    "She is safe.",
+    "They are safe.",
+    "No danger here.",
+    "The environment is peaceful and safe.",
+    "Security is good here.",
+    "I feel comfortable and safe.",
+    "There is nothing to worry about, it is safe.",
+    "Safe and sound.",
+    "Reached home safely.",
+    "The location is safe for tourists."
+]
+
 # --- NEW: Safe Long Paragraph Templates ---
 # The model struggles with long, complex safe paragraphs that contain multiple "trigger" words.
 # We need to explicitly train it on full paragraphs like the Lodhi Colony review.
@@ -329,6 +396,14 @@ def generate_safe_paragraph():
     # 10% chance to use a full "safe long paragraph" to fix the specific failure case
     if random.random() < 0.1:
         return random.choice(safe_long_paragraph_templates)
+
+    # 20% chance to use "Safe Reviews" (Critical for the new requirement)
+    if random.random() < 0.2:
+        return random.choice(safe_reviews_templates)
+
+    # 10% chance to use "Safe Distress" (Valid alerts)
+    if random.random() < 0.1:
+        return random.choice(safe_distress_templates)
 
     # 30% chance to generate a "safe complex" sentence that mirrors the unsafe structure
     # This is CRITICAL to fix the "walk and talk" vs "walk and have sex" confusion
@@ -358,6 +433,10 @@ def generate_safe_paragraph():
     # 15% chance to include "safe slang/travel" (to fix false positives on "fire/alleys/screaming")
     if random.random() < 0.15:
         return random.choice(safe_slang_templates)
+
+    # 15% chance to include "safe declarative" (to fix false positives on "The place is safe")
+    if random.random() < 0.15:
+        return random.choice(safe_declarative_templates)
 
     num_sentences = random.randint(2, 5)
     sentences = []
