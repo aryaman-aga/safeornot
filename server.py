@@ -51,7 +51,7 @@ def contains_hard_cuss_word(text: str):
 
 # Load Model and Tokenizer
 # This will automatically download the model from Hugging Face if not present locally
-MODEL_ID = "aryamanagarwal/safe-or-not-bert"  # <--- ENSURE THIS MATCHES YOUR HF REPO ID
+MODEL_ID = "aryamanagarwal/safe"  # <--- ENSURE THIS MATCHES YOUR HF REPO ID
 print(f"Loading model from {MODEL_ID}...")
 try:
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
