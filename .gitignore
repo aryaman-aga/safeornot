@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.env
+
+# Model Checkpoints and Artifacts
+results/
+saved_model/
+*.safetensors
+*.pt
+*.pth
+*.bin
+
+# Dataset (Optional: keep if small, ignore if large. 10k rows is small, but good practice to ignore generated data)
+dataset.csv
+
+# IDE
+.vscode/
+.idea/
+.DS_Store

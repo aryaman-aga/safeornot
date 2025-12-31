@@ -1,0 +1,11 @@
+pandas
+numpy
+scikit-learn
+torch
+transformers
+accelerate
+protobuf
+fastapi
+uvicorn
+python-multipart
+requests
