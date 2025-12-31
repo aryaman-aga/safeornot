@@ -256,6 +256,31 @@ safe_professional_templates = [
     "That's an interesting perspective."
 ]
 
+# --- NEW: Safe Reporting / Storytelling Templates ---
+# These contain "unsafe" words but are safe because they describe past events, reporting, or escaping.
+safe_reporting_templates = [
+    "The guy tried to harass me in the alley but I managed to escape.",
+    "I reported the harassment incident to the HR department immediately.",
+    "She was attacked by a dog but she is fine now.",
+    "I saw a fight on the street and called the police.",
+    "He tried to rob me but I ran away safely.",
+    "We discussed the issue of sexual harassment in our social studies class.",
+    "The news reported a murder in the city yesterday.",
+    "I avoided a dangerous situation by trusting my instincts.",
+    "Someone tried to scam me online but I blocked them.",
+    "He was acting aggressive so I left the room.",
+    "I read a book about a serial killer, it was very scary.",
+    "The police arrested the terrorist before he could attack.",
+    "I witnessed a crime and gave my statement to the cops.",
+    "My friend was bullied at school so we told the teacher.",
+    "I escaped from the kidnappers and ran to the nearest police station.",
+    "Reporting abuse is the first step to stopping it.",
+    "The documentary about the war was very violent but educational.",
+    "I am writing a story about a detective who solves a murder case.",
+    "He threatened me, so I filed a restraining order.",
+    "I saw someone with a gun and hid until it was safe."
+]
+
 # --- GENERATION LOGIC ---
 
 def generate_safe_paragraph():
@@ -281,6 +306,10 @@ def generate_safe_paragraph():
     # 15% chance to include a "safe professional disagreement" (to fix false positives on "I disagree")
     if random.random() < 0.15:
         return random.choice(safe_professional_templates)
+
+    # 15% chance to include a "safe reporting" sentence (to fix false positives on "harass/escape")
+    if random.random() < 0.15:
+        return random.choice(safe_reporting_templates)
 
     num_sentences = random.randint(2, 5)
     sentences = []

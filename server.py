@@ -50,23 +50,32 @@ def contains_hard_cuss_word(text: str):
     return False, None
 
 # Load Model and Tokenizer
-# This will automatically download the model from Hugging Face if not present locally
-MODEL_ID = "aryaman1222/safe"  
-print(f"Attempting to load model from Hugging Face Hub: {MODEL_ID}...")
-print(f"If this fails, check if '{MODEL_ID}' exists at https://huggingface.co/{MODEL_ID}")
+# Priority: Local './saved_model' > Hugging Face 'aryaman1222/safe'
+LOCAL_MODEL_PATH = "./saved_model"
+HF_MODEL_ID = "aryaman1222/safe"
+
+print("Loading model...")
 
 try:
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
-    model = AutoModelForSequenceClassification.from_pretrained(MODEL_ID)
-    model.eval() # Set to evaluation mode
-    print("Model loaded successfully.")
-except OSError as e:
-    print(f"\n❌ CRITICAL ERROR: Could not load model '{MODEL_ID}'.")
-    print(f"Error details: {e}")
-    exit(1)
-except Exception as e:
-    print(f"Error loading model: {e}")
-    exit(1)
+    # Try loading from local directory first (for development/testing)
+    print(f"Attempting to load local model from '{LOCAL_MODEL_PATH}'...")
+    tokenizer = AutoTokenizer.from_pretrained(LOCAL_MODEL_PATH)
+    model = AutoModelForSequenceClassification.from_pretrained(LOCAL_MODEL_PATH)
+    print("✅ Local model loaded successfully.")
+except Exception as e_local:
+    print(f"⚠️ Could not load local model: {e_local}")
+    print(f"Attempting to load from Hugging Face Hub: {HF_MODEL_ID}...")
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(HF_MODEL_ID)
+        model = AutoModelForSequenceClassification.from_pretrained(HF_MODEL_ID)
+        print("✅ Hugging Face model loaded successfully.")
+    except Exception as e_hf:
+        print(f"\n❌ CRITICAL ERROR: Could not load model from local or Hugging Face.")
+        print(f"Local Error: {e_local}")
+        print(f"HF Error: {e_hf}")
+        exit(1)
+
+model.eval() # Set to evaluation mode
 
 # Define Request Schema
 class TextRequest(BaseModel):
