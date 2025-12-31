@@ -21,8 +21,8 @@ train_texts, val_texts, train_labels, val_labels = train_test_split(
 
 # 2. Tokenization
 # model_name = "distilbert-base-multilingual-cased" # Best for Hinglish (500MB+)
-# model_name = "distilbert-base-uncased" # Good for English (260MB+)
-model_name = "prajjwal1/bert-small" # Better than tiny, fast (110MB)
+# model_name = "prajjwal1/bert-small" # Previous tiny model
+model_name = "roberta-base" # Stronger English sense (OpenAI-style transformer architecture)
 print(f"Loading tokenizer: {model_name}")
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
